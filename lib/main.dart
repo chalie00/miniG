@@ -18,7 +18,7 @@ class MiniGimbalState extends State<MiniGimbal> {
         primaryColor: Color(0xFFF0F6F4),
         scaffoldBackgroundColor: Color(0xFFF0F6F4),
       ),
-      home: InputPage(), // 메인 화면 설정
+      home: MainPage(), // 메인 화면 설정
     );
   }
 }

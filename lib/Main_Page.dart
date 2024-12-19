@@ -1,11 +1,15 @@
-import 'package:flutter/material.dart';
+import 'dart:ffi';
 
-class InputPage extends StatefulWidget {
+import 'package:flutter/material.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
+import 'CustomDialog.dart';
+
+class MainPage extends StatefulWidget {
   @override
-  InputPageState createState() => InputPageState();
+  MainPageState createState() => MainPageState();
 }
 
-class InputPageState extends State<InputPage> {
+class MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,13 +19,13 @@ class InputPageState extends State<InputPage> {
           style: TextStyle(
             fontSize: 25.0,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF0B1F16),
+            color: Color(0xFF6B7D76),
           ),
         ),
         backgroundColor: Color(0xFFF0F6F4),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(15.0),
+        padding: const EdgeInsets.all(18.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -37,9 +41,19 @@ class InputPageState extends State<InputPage> {
               alignment: Alignment.topRight,
               child: ElevatedButton(
                 onPressed: () {
-                  print('pressed Add');
+                  //TODO: 2024.12.19: Add AwesomeDialog for Camera Add
+                  AddDialog(context).show();
                 },
-                child: Text('Add'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF2CC98A),
+                ),
+                child: Text(
+                  'Add',
+                  style: TextStyle(
+                    fontSize: 18.0,
+                    color: Color(0xFFFFFFFF),
+                  ),
+                ),
               ),
             ),
             Align(
@@ -47,7 +61,7 @@ class InputPageState extends State<InputPage> {
               child: Text(
                 'Content',
                 style: TextStyle(
-                  fontSize: 15,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF6B7D76),
                 ),
@@ -77,16 +91,16 @@ class InputPageState extends State<InputPage> {
                 print('Connect');
               },
               style: ElevatedButton.styleFrom(
-                padding:
-                    EdgeInsets.symmetric(vertical: 15.0, horizontal: 100.0),
+                padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 90.0),
                 backgroundColor: Color(0xFF2CC98A),
               ),
               child: Text(
                 'Connect',
                 style: TextStyle(
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFFFFFFFF)),
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFFFFFFFF),
+                ),
               ),
             ),
           ),
