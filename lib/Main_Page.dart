@@ -1,15 +1,28 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
-import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:minig/Constants.dart';
 import 'CustomDialog.dart';
 
+// 2024.12.24: Added Global Key for Listview Tile update
+final GlobalKey<MainPageState> mainPageKey = GlobalKey<MainPageState>();
+
 class MainPage extends StatefulWidget {
+  MainPage({Key? key}) : super(key: mainPageKey);
+
   @override
   MainPageState createState() => MainPageState();
 }
 
 class MainPageState extends State<MainPage> {
+  // 2024.12.24: ListView Tile Update
+  void addListTile(String newItem) {
+    setState(() {
+      kcameraList.add(newItem);
+    });
+  }
+
+  // Index selected tile of Listview
+  int? selectedIndex;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,10 +32,10 @@ class MainPageState extends State<MainPage> {
           style: TextStyle(
             fontSize: 25.0,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF6B7D76),
+            color: kcolorTitle,
           ),
         ),
-        backgroundColor: Color(0xFFF0F6F4),
+        backgroundColor: kbackGround,
       ),
       body: Padding(
         padding: const EdgeInsets.all(18.0),
@@ -39,19 +52,34 @@ class MainPageState extends State<MainPage> {
             ),
             Align(
               alignment: Alignment.topRight,
-              child: ElevatedButton(
-                onPressed: () {
-                  //TODO: 2024.12.19: Add AwesomeDialog for Camera Add
-                  AddDialog(context).show();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF2CC98A),
-                ),
-                child: Text(
-                  'Add',
-                  style: TextStyle(
-                    fontSize: 18.0,
-                    color: Color(0xFFFFFFFF),
+              child: SizedBox(
+                width: 120,
+                child: ElevatedButton(
+                  onPressed: () {
+                    // 2024.12.19: Add AwesomeDialog for Camera Add
+                    AddDialog(context).show();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: kbuttonBackG,
+                    minimumSize: Size(110, 35),
+                  ),
+                  child: Row(
+                    children: [
+                      Text(
+                        'Add',
+                        style: TextStyle(
+                          fontSize: 18.0,
+                          color: kbuttonTxt,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 8,
+                      ),
+                      Icon(
+                        Icons.add_a_photo_outlined,
+                        size: 22,
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -63,20 +91,93 @@ class MainPageState extends State<MainPage> {
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF6B7D76),
+                  color: kContent,
                 ),
               ),
             ),
-            ListView(
-              shrinkWrap: true,
-              children: [
-                ListTile(
-                  title: Text('List 1'),
-                ),
-                ListTile(
-                  title: Text('List 2'),
-                ),
-              ],
+            Expanded(
+              // 2024.12.24: Added number, camera title, icon of Content
+              child: ListView.builder(
+                itemCount: kcameraList.length,
+                itemBuilder: (context, index) {
+                  return Dismissible(
+                    key: Key(kcameraList[index]),
+                    // Swipe Right -> Left is only operate
+                    direction: DismissDirection.endToStart,
+                    background: Container(
+                      color: Colors.green,
+                      alignment: Alignment.centerLeft,
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: Icon(
+                        Icons.edit,
+                        color: Colors.white,
+                      ),
+                    ),
+                    secondaryBackground: Container(
+                      color: Colors.red,
+                      alignment: Alignment.centerRight,
+                      padding: EdgeInsets.symmetric(horizontal: 20.0),
+                      child: Icon(
+                        Icons.delete,
+                        color: Colors.white,
+                      ),
+                    ),
+                    onDismissed: (direction) {
+                      //Swipe Left -> Right is not operate
+                      if (direction == DismissDirection.startToEnd) {
+                        // Left -> Right Swipe
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                              content: Text("Edited ${kcameraList[index]}")),
+                        );
+                        return;
+                      } else if (direction == DismissDirection.endToStart) {
+                        // Right -> Left Swipe
+                        setState(() {
+                          kcameraList.removeAt(index);
+                          kcameraInfo.removeAt(index);
+                        });
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                              content: Text("Deleted ${kcameraList[index]}")),
+                        );
+                      }
+                    },
+                    child: ListTile(
+                      leading: Text('${index + 1}',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            color: kContentTxt,
+                          )),
+                      title: Text(
+                        kcameraList[index],
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                          color: kContentTxt,
+                        ),
+                      ),
+                      tileColor: selectedIndex == index
+                          ? kContentSelect
+                          : kContentUnSelect,
+                      subtitle: Text(
+                          '${kcameraInfo[index].ip}:${kcameraInfo[index].port}'),
+                      trailing: IconButton(
+                          onPressed: () {
+                            print('Icon was Pressed');
+                          },
+                          icon: Icon(Icons.create)),
+                      onTap: () {
+                        setState(() {
+                          selectedIndex = index;
+                        });
+                        print('Item ${kcameraInfo[index]} was tapped');
+                      },
+                    ),
+                  );
+                },
+              ),
             ),
           ],
         ),
@@ -92,14 +193,14 @@ class MainPageState extends State<MainPage> {
               },
               style: ElevatedButton.styleFrom(
                 padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 90.0),
-                backgroundColor: Color(0xFF2CC98A),
+                backgroundColor: kbuttonBackG,
               ),
               child: Text(
                 'Connect',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFFFFFFFF),
+                  color: kbuttonTxt,
                 ),
               ),
             ),
