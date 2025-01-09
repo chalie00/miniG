@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:minig/Constants.dart';
-import 'CustomDialog.dart';
+import 'package:logger/logger.dart';
+import 'package:flutter/services.dart';
+
+import 'package:minig/constants.dart';
+import 'custom_dialog.dart';
+import 'com_func.dart';
+import 'control_page.dart';
+
+var logger = Logger();
 
 // 2024.12.24: Added Global Key for Listview Tile update
 final GlobalKey<MainPageState> mainPageKey = GlobalKey<MainPageState>();
@@ -13,6 +20,15 @@ class MainPage extends StatefulWidget {
 }
 
 class MainPageState extends State<MainPage> {
+  //2025.01.08 Added Portrait Mode
+  void initState() {
+    super.initState();
+
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
+  }
+
   // 2024.12.24: ListView Tile Update
   void addListTile(String newItem) {
     setState(() {
@@ -57,7 +73,7 @@ class MainPageState extends State<MainPage> {
                 child: ElevatedButton(
                   onPressed: () {
                     // 2024.12.19: Add AwesomeDialog for Camera Add
-                    AddDialog(context).show();
+                    addDialog(context).show();
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: kbuttonBackG,
@@ -165,14 +181,16 @@ class MainPageState extends State<MainPage> {
                           '${kcameraInfo[index].ip}:${kcameraInfo[index].port}'),
                       trailing: IconButton(
                           onPressed: () {
-                            print('Icon was Pressed');
+                            logger.i('Icon was Pressed');
                           },
                           icon: Icon(Icons.create)),
                       onTap: () {
                         setState(() {
                           selectedIndex = index;
+                          kselectedCamera = kcameraInfo[index];
+                          print(kselectedCamera);
                         });
-                        print('Item ${kcameraInfo[index]} was tapped');
+                        logger.i('Item ${kcameraInfo[index].model} was tapped');
                       },
                     ),
                   );
@@ -187,9 +205,27 @@ class MainPageState extends State<MainPage> {
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 30.0),
+            // 2024.01.06 Move to Control Page when pressed connect button
             child: ElevatedButton(
               onPressed: () {
-                print('Connect');
+                logger.i('Connect');
+                if (selectedIndex != null) {
+                  String model = kcameraInfo[selectedIndex!].model;
+                  String ip = kcameraInfo[selectedIndex!].ip;
+                  int port = kcameraInfo[selectedIndex!].port;
+                  connectToMinig(ip, port);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          //rtsp://root:root@192.168.100.153:554/cam0_0
+                          ControlPage(
+                              index: selectedIndex!,
+                              rtspUrl:
+                                  'rtsp://root:root1@192.168.100.153:554/cam0_0'),
+                    ),
+                  );
+                }
               },
               style: ElevatedButton.styleFrom(
                 padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 90.0),

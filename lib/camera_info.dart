@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 // 2024.12.23: Add Camera Class
 class CameraInfo {
   CameraInfo(

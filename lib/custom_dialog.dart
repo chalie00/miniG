@@ -1,11 +1,14 @@
-import 'Main_Page.dart';
 import 'package:flutter/material.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:flutter/rendering.dart';
-import 'package:minig/Constants.dart';
-import 'CameraInfo.dart';
+import 'package:logger/logger.dart';
 
-List<String> select_model = [
+import 'main_page.dart';
+import 'package:minig/constants.dart';
+import 'camera_info.dart';
+
+var logger = Logger();
+
+List<String> selectModel = [
   'TBX-05N',
   'NYX Series',
   'TPV-IAHDR_EO',
@@ -13,13 +16,13 @@ List<String> select_model = [
   'TQM-1M',
 ];
 
-final TextEditingController ip_fld_con = TextEditingController();
-final TextEditingController port_fld_con = TextEditingController();
-final TextEditingController id_fld_con = TextEditingController();
-final TextEditingController pw_fld_con = TextEditingController();
+final TextEditingController ipFldCon = TextEditingController();
+final TextEditingController portFldCon = TextEditingController();
+final TextEditingController idFldCon = TextEditingController();
+final TextEditingController pwFldCon = TextEditingController();
 
-class Dia_TextFld extends StatelessWidget {
-  Dia_TextFld(
+class DiaTextFld extends StatelessWidget {
+  DiaTextFld(
       {super.key,
       required this.width,
       required this.height,
@@ -52,7 +55,7 @@ class Dia_TextFld extends StatelessWidget {
 } //End Of The Class
 
 // For Camera Add Dialog
-AwesomeDialog AddDialog(BuildContext context) {
+AwesomeDialog addDialog(BuildContext context) {
   String? selectedValue;
 
   return AwesomeDialog(
@@ -78,7 +81,7 @@ AwesomeDialog AddDialog(BuildContext context) {
           DropdownButton<String>(
             value: selectedValue,
             hint: Text('Select a Model'),
-            items: select_model.map((String item) {
+            items: selectModel.map((String item) {
               return DropdownMenuItem<String>(
                 value: item,
                 child: Text(item),
@@ -90,39 +93,39 @@ AwesomeDialog AddDialog(BuildContext context) {
               });
             },
           ),
-          Dia_TextFld(
+          DiaTextFld(
               width: 200,
               height: 40,
-              controller: ip_fld_con,
+              controller: ipFldCon,
               obscureTxt: false,
               placeholder: 'IP Address'),
           SizedBox(
             height: 10.0,
           ),
-          Dia_TextFld(
+          DiaTextFld(
             width: 200,
             height: 40,
-            controller: port_fld_con,
+            controller: portFldCon,
             obscureTxt: false,
             placeholder: 'Port Number',
           ),
           SizedBox(
             height: 10.0,
           ),
-          Dia_TextFld(
+          DiaTextFld(
             width: 200,
             height: 40,
-            controller: id_fld_con,
+            controller: idFldCon,
             obscureTxt: true,
             placeholder: 'ID',
           ),
           SizedBox(
             height: 10.0,
           ),
-          Dia_TextFld(
+          DiaTextFld(
             width: 200,
             height: 40,
-            controller: pw_fld_con,
+            controller: pwFldCon,
             obscureTxt: true,
             placeholder: 'PW',
           ),
@@ -132,22 +135,22 @@ AwesomeDialog AddDialog(BuildContext context) {
     title: 'Information',
     desc: 'Please Type a Information',
     btnOkOnPress: () {
-      String ip = ip_fld_con.text;
-      int port = int.parse(port_fld_con.text);
-      String id = id_fld_con.text;
-      String pw = pw_fld_con.text;
+      String ip = ipFldCon.text;
+      int port = int.parse(portFldCon.text);
+      String id = idFldCon.text;
+      String pw = pwFldCon.text;
 
       if (selectedValue!.isNotEmpty) {
         kcameraInfo.add(CameraInfo(
             model: selectedValue!, ip: ip, port: port, id: id, pw: pw));
         mainPageKey.currentState?.addListTile(kcameraInfo.last.model);
 
-        print(kcameraList);
+        logger.i(kcameraList);
         resetTextFld();
       }
     },
     btnCancelOnPress: () {
-      print('Cancel Btn Was Pressed');
+      logger.i('Cancel Btn Was Pressed');
       resetTextFld();
     },
     dismissOnTouchOutside: true,
@@ -164,8 +167,8 @@ AwesomeDialog AddDialog(BuildContext context) {
 
 // 2024.12.23: Reset Dialog Textfield
 void resetTextFld() {
-  ip_fld_con.text = '';
-  port_fld_con.text = '';
-  id_fld_con.text = '';
-  pw_fld_con.text = '';
+  ipFldCon.text = '';
+  portFldCon.text = '';
+  idFldCon.text = '';
+  pwFldCon.text = '';
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'Main_Page.dart';
+import 'main_page.dart';
 
 void main() => runApp(MiniGimbal());
 
